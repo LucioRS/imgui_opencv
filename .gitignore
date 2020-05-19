@@ -29,3 +29,10 @@
 *.app
 *.db
 *.opendb
+.vs/ImGui_OpenCV/v15/.suo
+*.ipch
+*.log
+*.iobj
+*.ipdb
+*.tlog
+*.pdb

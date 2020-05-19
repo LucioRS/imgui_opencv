@@ -70,6 +70,8 @@ int main(int, char**)
 	OPENFILENAME ofn;       // common dialog box structure
 	char szFile[260];       // buffer for file name
 
+
+	// Open File Dialog setup (only for Windows!!) - comment if not in Windows ///
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(ofn);
@@ -85,6 +87,7 @@ int main(int, char**)
 	ofn.nMaxFileTitle = 0;
 	ofn.lpstrInitialDir = NULL;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	////////////////////////////////////////////////////
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -111,7 +114,7 @@ int main(int, char**)
 			{
 				if (ImGui::MenuItem("Open", NULL, &show_dialog, !show_dialog))
 				{
-					// Display the Open dialog box. 
+					// Display the Open dialog box (only for Windows!! - comment if not in Windows) ///
 					if (GetOpenFileName(&ofn) == TRUE)
 					{
 						ret = LoadTextureFromFile(ofn.lpstrFile, &image_texture, &image_width, &image_height);
@@ -120,6 +123,15 @@ int main(int, char**)
 					}
 					else
 						show_dialog = false;
+					//////////////////////////////////////////////////////////////////////////////////
+
+					//Open File directly without using dialog
+					/*ret = LoadTextureFromFile("../../images/Lenna.png", &image_texture, &image_width, &image_height);
+					IM_ASSERT(ret);
+					if(ret)
+						in_image = GetOcvImgFromOglImg(image_texture);
+					else
+						show_dialog = false;*/
 				}
 				if (ImGui::MenuItem("Close", NULL, false, show_dialog))
 				{

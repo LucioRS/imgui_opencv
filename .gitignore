@@ -36,3 +36,4 @@
 *.ipdb
 *.tlog
 *.pdb
+.vs/imgui_opencv_demo/v15/.suo

@@ -106,7 +106,6 @@ int App::Init()
 	ofn_.nMaxFileTitle = 0;
 	ofn_.lpstrInitialDir = "../../images/";
 	ofn_.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-	////////////////////////////////////////////////////
 
 	return 0;
 }

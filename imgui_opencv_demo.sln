@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui_opencv_demo", "imgui_opencv_demo.vcxproj", "{15420083-5E66-4AE6-A3CB-1D46CC72409C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15420083-5E66-4AE6-A3CB-1D46CC72409C}.Debug|x64.ActiveCfg = Debug|x64
+		{15420083-5E66-4AE6-A3CB-1D46CC72409C}.Debug|x64.Build.0 = Debug|x64
+		{15420083-5E66-4AE6-A3CB-1D46CC72409C}.Debug|x86.ActiveCfg = Debug|Win32
+		{15420083-5E66-4AE6-A3CB-1D46CC72409C}.Debug|x86.Build.0 = Debug|Win32
+		{15420083-5E66-4AE6-A3CB-1D46CC72409C}.Release|x64.ActiveCfg = Release|x64
+		{15420083-5E66-4AE6-A3CB-1D46CC72409C}.Release|x64.Build.0 = Release|x64
+		{15420083-5E66-4AE6-A3CB-1D46CC72409C}.Release|x86.ActiveCfg = Release|Win32
+		{15420083-5E66-4AE6-A3CB-1D46CC72409C}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

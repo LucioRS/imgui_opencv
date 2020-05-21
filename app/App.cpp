@@ -99,8 +99,8 @@ int App::Init()
 	// use the contents of szFile to initialize itself.
 	ofn_.lpstrFile[0] = '\0';
 	ofn_.nMaxFile = sizeof(szFile_);
-	ofn_.lpstrFilter = "Image Files (bmp,dib,jpeg,jpg,jpe,jp2,png,webp,pbm,pgm,ppm,pxm,pnm,pfm,sr,tiff,exr,hdr)"
-		"\0*.bmp;*.dib;*.jpeg;*.jpg;*.jpe;*.jp2;*.png;*.webp;*.pbm;*.pgm;*.ppm;*.pxm;*.pnm;*.pfm;*.sr;*.tiff;*.exr;*.hdr\0";
+	ofn_.lpstrFilter = "Image Files (bmp,dib,jpeg,jpg,jpe,jp2,png,webp,pbm,pgm,ppm,pxm,pnm,pfm,sr,tif,tiff,exr,hdr)"
+		"\0*.bmp;*.dib;*.jpeg;*.jpg;*.jpe;*.jp2;*.png;*.webp;*.pbm;*.pgm;*.ppm;*.pxm;*.pnm;*.pfm;*.sr;*.tif;*.tiff;*.exr;*.hdr\0";
 	ofn_.nFilterIndex = 1;
 	ofn_.lpstrFileTitle = NULL;
 	ofn_.nMaxFileTitle = 0;
@@ -119,9 +119,10 @@ void App::UpdateTexture(bool first)
 		if (original_texture_id_ == -1)
 			glGenTextures(1, &original_texture_id_);
 		glBindTexture(GL_TEXTURE_2D, original_texture_id_);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, (resized_image_.step & 3) ? 1 : 4);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image_width_, image_height_, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
@@ -129,9 +130,10 @@ void App::UpdateTexture(bool first)
 		if (modified_texture_id_ == -1)
 			glGenTextures(1, &modified_texture_id_);
 		glBindTexture(GL_TEXTURE_2D, modified_texture_id_);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, (resized_image_.step & 3) ? 1 : 4);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image_width_, image_height_, 0, GL_BGR, GL_UNSIGNED_BYTE, data);

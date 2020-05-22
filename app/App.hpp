@@ -44,6 +44,9 @@ using namespace gl;
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+#define min(a,b) ((a)<(b)?(a):(b))	//Caution when using these macros, see:
+#define max(a,b) ((a)>(b)?(a):(b))	//https://dustri.org/b/min-and-max-macro-considered-harmful.html
+
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup") //Comment out to enable CONSOLE WINDOW
 
 class App
@@ -54,8 +57,8 @@ public:
 
 	int Init();
 	void Render();
+	void SetupWindow();
 	void SetupDockArea();
-	void ShowDockArea();
 	void ShowMenu();
 	void ShowImages();
 	void UpdateTexture(bool first = false);
@@ -64,8 +67,9 @@ public:
 private:
 	GLFWwindow* window_;
 	ImGuiViewport* viewport_;
+	ImGuiWindowFlags mainDockWindow_flags_;
 	ImGuiDockNodeFlags dockspace_flags_;
-	ImGuiWindowFlags window_flags_;
+	ImGuiWindowFlags imageWindows_flags_;
 	// comment out to open file without dialog (No windows.h)
 	OPENFILENAME ofn_;	// common dialog box structure
 	ImVec4 clear_color_;

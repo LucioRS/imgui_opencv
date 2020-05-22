@@ -19,12 +19,14 @@ App::App()
 	sharpness_ = 3;
 	threshold_[0] = 10;
 	threshold_[1] = 100;
-	dockspace_flags_ = ImGuiDockNodeFlags_None;
 	// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 	// because it would be confusing to have two docking targets within each others.
-	window_flags_ = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-	window_flags_ |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	window_flags_ |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	mainDockWindow_flags_ = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	mainDockWindow_flags_ |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	mainDockWindow_flags_ |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	dockspace_flags_ = ImGuiDockNodeFlags_None;
+
+	imageWindows_flags_ = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 }
 
 App::~App()
@@ -146,7 +148,7 @@ void App::UpdateTexture(bool first)
 	}
 }
 
-void App::SetupDockArea()
+void App::SetupWindow()
 {
 	viewport_ = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport_->GetWorkPos());
@@ -155,7 +157,7 @@ void App::SetupDockArea()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-	ImGui::Begin("MainDockspaceArea", NULL, window_flags_);
+	ImGui::Begin("MainDockspaceArea", NULL, mainDockWindow_flags_);
 	ImGui::PopStyleVar();
 	ImGui::PopStyleVar(2);
 }
@@ -196,7 +198,7 @@ void App::ShowMenu()
 	}
 }
 
-void App::ShowDockArea()
+void App::SetupDockArea()
 {
 	// DockSpace
 	ImGuiID mainDockspaceId = ImGui::GetID("MainDockspaceArea");
@@ -226,7 +228,7 @@ void App::ShowImages()
 
 	if (show_images_)
 	{
-		ImGui::Begin("Original Image");
+		ImGui::Begin("Original Image", NULL, imageWindows_flags_);
 		ImGui::Image((void*)(intptr_t)original_texture_id_, ImVec2((float)image_width_, (float)image_height_));
 
 		ImGui::Text("Effect:"); ImGui::SameLine();
@@ -244,7 +246,7 @@ void App::ShowImages()
 		}
 		ImGui::End();
 
-		ImGui::Begin("Modified Image");
+		ImGui::Begin("Modified Image", NULL, imageWindows_flags_);
 		ImGui::Image((void*)(intptr_t)modified_texture_id_, ImVec2((float)image_width_, (float)image_height_));
 
 		switch (radio_)
@@ -318,9 +320,9 @@ void App::Render()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		SetupDockArea();
+		SetupWindow();
 		ShowMenu();
-		ShowDockArea();
+		SetupDockArea();
 		ShowImages();
 
 		// Rendering

@@ -12,21 +12,17 @@ App::App()
 	show_images_ = false;
 	firstTime_ = true;
 	show_demo_window_ = false;
-	clear_color_ = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	clear_color_ = ImVec4(0.05f, 0.15f, 0.20f, 1.00f);
+	optimal_image_width_height_ = 512;
+	windows_width_ = optimal_image_width_height_ + 18;
+	windows_height_ = optimal_image_width_height_ + 68;
 	radio_ = 0;
 	radio_ant_ = 0;
 	ksize_ = 3;
 	sharpness_ = 3;
 	threshold_[0] = 10;
 	threshold_[1] = 100;
-	// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-	// because it would be confusing to have two docking targets within each others.
-	mainDockWindow_flags_ = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-	mainDockWindow_flags_ |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	mainDockWindow_flags_ |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	dockspace_flags_ = ImGuiDockNodeFlags_None;
-
-	imageWindows_flags_ = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	imageWindows_flags_ = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse;
 }
 
 App::~App()
@@ -56,8 +52,13 @@ int App::Init()
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
-	// Create window with graphics context (In this case, 1060 pixels width, 604 pixels height)
-	window_ = glfwCreateWindow(1060, 604, "Dear ImGui - OpenCV example", NULL, NULL);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); //User can't resize window
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	monitor_mode_ = glfwGetVideoMode(monitor);
+	// Create window with graphics context (In this case, (512+18) x 2 = 1060 width, 25(MenuBar) + (512+68) = 605 height, for 512 square image)
+	window_ = glfwCreateWindow(windows_width_ * 2, 25 + windows_height_, "Dear ImGui - OpenCV example", NULL, NULL);
+	max_window_width_ = (monitor_mode_->width - 100) / 2;  //100 margin
+	max_image_width_ = max_window_width_ - 18;
 	if (window_ == NULL)
 		return 1;
 	glfwMakeContextCurrent(window_);
@@ -78,7 +79,7 @@ int App::Init()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+	//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
@@ -148,40 +149,40 @@ void App::UpdateTexture(bool first)
 	}
 }
 
-void App::SetupWindow()
-{
-	viewport_ = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport_->GetWorkPos());
-	ImGui::SetNextWindowSize(viewport_->GetWorkSize());
-	ImGui::SetNextWindowViewport(viewport_->ID);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-	ImGui::Begin("MainDockspaceArea", NULL, mainDockWindow_flags_);
-	ImGui::PopStyleVar();
-	ImGui::PopStyleVar(2);
-}
-
 void App::ShowMenu()
 {
-	if (ImGui::BeginMenuBar())
+	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("Open", NULL, &show_images_, !show_images_))
 			{
-				if (GetOpenFileName(&ofn_) == TRUE) // Display the Open dialog box (only for Windows!! - comment if not in Windows) ///
+				if (GetOpenFileName(&ofn_) == TRUE) // Display the Open dialog box (only for Windows!!) ///
 				{
 					original_image_ = cv::imread(ofn_.lpstrFile);
 					//original_image_ = cv::imread("../../images/Lenna.png"); //Open File directly without using dialog
 					if (!original_image_.empty())
 					{
-						int resized_height = 512;
-						double scale = static_cast<float>(resized_height) / original_image_.size().height;
+						float resized_height;
+						float ratio = static_cast<float>(original_image_.size().width) / original_image_.size().height;
+						if(ratio * optimal_image_width_height_ > max_image_width_)
+							resized_height = static_cast<float>(max_image_width_) / original_image_.size().width * original_image_.size().height;
+						else
+							resized_height = static_cast<float>(optimal_image_width_height_);
+						//resized_height = 470;
+						double scale = resized_height / original_image_.size().height;
 						cv::resize(original_image_, resized_image_, cv::Size(0, 0), scale, scale);
 						image_width_ = resized_image_.size().width;
 						image_height_ = resized_image_.size().height;
 						UpdateTexture(true);
+
+						windows_height_ = resized_image_.size().height + 68;
+						if (resized_image_.size().width > optimal_image_width_height_)
+							windows_width_ = resized_image_.size().width + 18;
+						else
+							windows_width_ = optimal_image_width_height_ + 18;
+
+						glfwSetWindowSize(window_, windows_width_* 2, 25 + windows_height_);
 					}
 				}
 				else
@@ -191,34 +192,12 @@ void App::ShowMenu()
 			{
 				radio_ = 0;
 				show_images_ = false;
+				glfwSetWindowSize(window_, (optimal_image_width_height_ + 18) * 2, 25 + 68 + optimal_image_width_height_);
 			}
 			ImGui::EndMenu();
 		}
-		ImGui::EndMenuBar();
+		ImGui::EndMainMenuBar();
 	}
-}
-
-void App::SetupDockArea()
-{
-	// DockSpace
-	ImGuiID mainDockspaceId = ImGui::GetID("MainDockspaceArea");
-	ImGui::DockSpace(mainDockspaceId, ImVec2(0.0f, 0.0f), dockspace_flags_);
-
-	static auto firstTime = true;
-	if (firstTime)
-	{
-		firstTime = false;
-		ImGui::DockBuilderRemoveNode(mainDockspaceId);
-		ImGui::DockBuilderAddNode(mainDockspaceId, ImGuiDockNodeFlags_DockSpace);
-		ImGui::DockBuilderSetNodeSize(mainDockspaceId, viewport_->GetWorkSize());
-
-		auto dockIdLeft = ImGui::DockBuilderSplitNode(mainDockspaceId, ImGuiDir_Left, 0.5f, nullptr, &mainDockspaceId);
-
-		ImGui::DockBuilderDockWindow("Original Image", dockIdLeft);
-		ImGui::DockBuilderDockWindow("Modified Image", mainDockspaceId);
-		ImGui::DockBuilderFinish(mainDockspaceId);
-	}
-	ImGui::End();
 }
 
 void App::ShowImages()
@@ -228,6 +207,8 @@ void App::ShowImages()
 
 	if (show_images_)
 	{
+		ImGui::SetNextWindowPos(ImVec2(0, 25));
+		ImGui::SetNextWindowSize(ImVec2((float)windows_width_, (float)windows_height_));
 		ImGui::Begin("Original Image", NULL, imageWindows_flags_);
 		ImGui::Image((void*)(intptr_t)original_texture_id_, ImVec2((float)image_width_, (float)image_height_));
 
@@ -246,6 +227,8 @@ void App::ShowImages()
 		}
 		ImGui::End();
 
+		ImGui::SetNextWindowPos(ImVec2((float)windows_width_, 25));
+		ImGui::SetNextWindowSize(ImVec2((float)windows_width_, (float)windows_height_));
 		ImGui::Begin("Modified Image", NULL, imageWindows_flags_);
 		ImGui::Image((void*)(intptr_t)modified_texture_id_, ImVec2((float)image_width_, (float)image_height_));
 
@@ -304,7 +287,7 @@ void App::ShowImages()
 	}
 }
 
-void App::Render()
+void App::Run()
 {
 	while (!glfwWindowShouldClose(window_))
 	{
@@ -320,9 +303,7 @@ void App::Render()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		SetupWindow();
 		ShowMenu();
-		SetupDockArea();
 		ShowImages();
 
 		// Rendering

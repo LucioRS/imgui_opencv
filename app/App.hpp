@@ -56,9 +56,7 @@ public:
 	~App();
 
 	int Init();
-	void Render();
-	void SetupWindow();
-	void SetupDockArea();
+	void Run();
 	void ShowMenu();
 	void ShowImages();
 	void UpdateTexture(bool first = false);
@@ -66,10 +64,12 @@ public:
 
 private:
 	GLFWwindow* window_;
-	ImGuiViewport* viewport_;
-	ImGuiWindowFlags mainDockWindow_flags_;
-	ImGuiDockNodeFlags dockspace_flags_;
+	const GLFWvidmode* monitor_mode_;
 	ImGuiWindowFlags imageWindows_flags_;
+	int max_window_width_;
+	int windows_width_, windows_height_;
+	int optimal_image_width_height_;
+	int max_image_width_;
 	// comment out to open file without dialog (No windows.h)
 	OPENFILENAME ofn_;	// common dialog box structure
 	ImVec4 clear_color_;

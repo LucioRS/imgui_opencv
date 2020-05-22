@@ -157,7 +157,7 @@ void App::ShowMenu()
 		{
 			if (ImGui::MenuItem("Open", NULL, &show_images_, !show_images_))
 			{
-				if (GetOpenFileName(&ofn_) == TRUE) // Display the Open dialog box (only for Windows!!) ///
+				if (GetOpenFileName(&ofn_) == TRUE) // Display the Open dialog box (Windows only!!) ///
 				{
 					original_image_ = cv::imread(ofn_.lpstrFile);
 					//original_image_ = cv::imread("../../images/Lenna.png"); //Open File directly without using dialog
@@ -209,7 +209,7 @@ void App::ShowImages()
 	{
 		ImGui::SetNextWindowPos(ImVec2(0, 25));
 		ImGui::SetNextWindowSize(ImVec2((float)windows_width_, (float)windows_height_));
-		ImGui::Begin("Original Image", NULL, imageWindows_flags_);
+		ImGui::Begin(ofn_.lpstrFile, NULL, imageWindows_flags_);  //File name extracted from ofn_ OPENFILENAME structure (Windows only!!)
 		ImGui::Image((void*)(intptr_t)original_texture_id_, ImVec2((float)image_width_, (float)image_height_));
 
 		ImGui::Text("Effect:"); ImGui::SameLine();
@@ -229,7 +229,7 @@ void App::ShowImages()
 
 		ImGui::SetNextWindowPos(ImVec2((float)windows_width_, 25));
 		ImGui::SetNextWindowSize(ImVec2((float)windows_width_, (float)windows_height_));
-		ImGui::Begin("Modified Image", NULL, imageWindows_flags_);
+		ImGui::Begin("*Output Image", NULL, imageWindows_flags_);
 		ImGui::Image((void*)(intptr_t)modified_texture_id_, ImVec2((float)image_width_, (float)image_height_));
 
 		switch (radio_)

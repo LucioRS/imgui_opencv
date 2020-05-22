@@ -163,19 +163,21 @@ void App::ShowMenu()
 					//original_image_ = cv::imread("../../images/Lenna.png"); //Open File directly without using dialog
 					if (!original_image_.empty())
 					{
+						//Resize image to better fit screen preserving its aspect ratio
 						float resized_height;
 						float ratio = static_cast<float>(original_image_.size().width) / original_image_.size().height;
 						if(ratio * optimal_image_width_height_ > max_image_width_)
 							resized_height = static_cast<float>(max_image_width_) / original_image_.size().width * original_image_.size().height;
 						else
 							resized_height = static_cast<float>(optimal_image_width_height_);
-						//resized_height = 470;
 						double scale = resized_height / original_image_.size().height;
 						cv::resize(original_image_, resized_image_, cv::Size(0, 0), scale, scale);
+						
 						image_width_ = resized_image_.size().width;
 						image_height_ = resized_image_.size().height;
 						UpdateTexture(true);
 
+						//Adjust windows width and height considering ui, then resize program window accordingly 
 						windows_height_ = resized_image_.size().height + 68;
 						if (resized_image_.size().width > optimal_image_width_height_)
 							windows_width_ = resized_image_.size().width + 18;

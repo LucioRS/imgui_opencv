@@ -1,1 +1,0 @@
-C:\Users\lucio\Documents\GitHub\imgui_opencv\x64\Release\imgui_opencv_demo.exe

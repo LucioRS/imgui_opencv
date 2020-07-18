@@ -40,3 +40,7 @@
 x64/Release/imgui.ini
 images/imgui.ini
 images/imgui.ini
+x64/Release/imgui_opencv_demo.vcxproj.FileListAbsolute.txt
+.vs/imgui_opencv_demo/v16/Browse.VC.db-wal
+.vs/imgui_opencv_demo/v16/Browse.VC.db-shm
+.vs/imgui_opencv_demo/v16/.suo

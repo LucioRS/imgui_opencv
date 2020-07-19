@@ -7,7 +7,8 @@
 #include "imgui_internal.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <windows.h>	//To use window's dialog to select image file, comment out to open file without dialog
+#include <ifch/IconsFontAwesome5.h>
+#include <pfd/portable-file-dialogs.h>
 #include <opencv2/opencv.hpp>
 
 // About Desktop OpenGL function loaders:
@@ -44,9 +45,6 @@ using namespace gl;
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-#define min(a,b) ((a)<(b)?(a):(b))	//Caution when using these macros, see:
-#define max(a,b) ((a)>(b)?(a):(b))	//https://dustri.org/b/min-and-max-macro-considered-harmful.html
-
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup") //Comment out to enable CONSOLE WINDOW
 
 class App
@@ -70,10 +68,8 @@ private:
 	int windows_width_, windows_height_;
 	int optimal_image_width_height_;
 	int max_image_width_;
-	// comment out to open file without dialog (No windows.h)
-	OPENFILENAME ofn_;	// common dialog box structure
 	ImVec4 clear_color_;
-	char szFile_[260];	// buffer for file name
+	std::string filename_;
 	GLuint original_texture_id_;
 	GLuint modified_texture_id_;
 	int image_width_, image_height_;

@@ -92,23 +92,12 @@ int App::Init()
 	ImFont* font = io.Fonts->AddFontFromFileTTF("../../fonts/Roboto-Medium.ttf", 18.0f);
 	IM_ASSERT(font != NULL);
 
-	// Open File Dialog setup(only for Windows!!) - comment out if not in Windows ///
-	// Initialize OPENFILENAME
-	ZeroMemory(&ofn_, sizeof(ofn_));
-	ofn_.lStructSize = sizeof(ofn_);
-	ofn_.hwndOwner = NULL;
-	ofn_.lpstrFile = szFile_;
-	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
-	// use the contents of szFile to initialize itself.
-	ofn_.lpstrFile[0] = '\0';
-	ofn_.nMaxFile = sizeof(szFile_);
-	ofn_.lpstrFilter = "Image Files (bmp,dib,jpeg,jpg,jpe,jp2,png,webp,pbm,pgm,ppm,pxm,pnm,pfm,sr,tif,tiff,exr,hdr)"
-		"\0*.bmp;*.dib;*.jpeg;*.jpg;*.jpe;*.jp2;*.png;*.webp;*.pbm;*.pgm;*.ppm;*.pxm;*.pnm;*.pfm;*.sr;*.tif;*.tiff;*.exr;*.hdr\0";
-	ofn_.nFilterIndex = 1;
-	ofn_.lpstrFileTitle = NULL;
-	ofn_.nMaxFileTitle = 0;
-	ofn_.lpstrInitialDir = "../../images/";
-	ofn_.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	// merge in icons from Font Awesome
+	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+	ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
+	font = io.Fonts->AddFontFromFileTTF("../../fonts/" FONT_ICON_FILE_NAME_FAR, 16.0f, &icons_config, icons_ranges);
+	// use FONT_ICON_FILE_NAME_FAS if you want solid instead of regular
+	IM_ASSERT(font != NULL);
 
 	return 0;
 }
@@ -153,13 +142,17 @@ void App::ShowMenu()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
-		if (ImGui::BeginMenu("File"))
+		if (ImGui::BeginMenu(ICON_FA_FILE " File"))
 		{
-			if (ImGui::MenuItem("Open", NULL, &show_images_, !show_images_))
+			if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open", NULL, &show_images_, !show_images_))
 			{
-				if (GetOpenFileName(&ofn_) == TRUE) // Display the Open dialog box (Windows only!!) ///
+				auto selection = pfd::open_file("Elija un archivo", ".",
+				{ "Image Files", "*.bmp *.dib *.jpeg *.jpg *.jpe *.jp2 *.png *.webp *.pbm *.pgm *.ppm *.pxm *.pnm *.pfm *.sr *.tif *.tiff *.exr *.hdr",
+					"All Files", "*" }).result(); // Display the Open dialog box
+				if (!selection.empty())
 				{
-					original_image_ = cv::imread(ofn_.lpstrFile);
+					filename_ = selection[0];
+					original_image_ = cv::imread(filename_);
 					//original_image_ = cv::imread("../../images/Lenna.png"); //Open File directly without using dialog
 					if (!original_image_.empty())
 					{
@@ -190,7 +183,7 @@ void App::ShowMenu()
 				else
 					show_images_ = false;
 			}
-			if (ImGui::MenuItem("Close", NULL, false, show_images_))
+			if (ImGui::MenuItem(ICON_FA_FOLDER " Close", NULL, false, show_images_))
 			{
 				radio_ = 0;
 				show_images_ = false;
@@ -211,7 +204,7 @@ void App::ShowImages()
 	{
 		ImGui::SetNextWindowPos(ImVec2(0, 25));
 		ImGui::SetNextWindowSize(ImVec2((float)windows_width_, (float)windows_height_));
-		ImGui::Begin(ofn_.lpstrFile, NULL, imageWindows_flags_);  //File name extracted from ofn_ OPENFILENAME structure (Windows only!!)
+		ImGui::Begin(filename_.c_str(), NULL, imageWindows_flags_);
 		ImGui::Image((void*)(intptr_t)original_texture_id_, ImVec2((float)image_width_, (float)image_height_));
 
 		ImGui::Text("Effect:"); ImGui::SameLine();

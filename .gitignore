@@ -25,6 +25,7 @@
 *.a
 
 # Executables
+*.exe
 *.out
 *.app
 *.db
@@ -38,7 +39,6 @@
 *.pdb
 .vs/imgui_opencv_demo/v15/.suo
 x64/Release/imgui.ini
-images/imgui.ini
 images/imgui.ini
 x64/Release/imgui_opencv_demo.vcxproj.FileListAbsolute.txt
 .vs/imgui_opencv_demo/v16/Browse.VC.db-wal
